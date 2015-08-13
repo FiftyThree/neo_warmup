@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ServiceTest {
     public static GraphDatabaseService db;
@@ -41,7 +42,7 @@ public class ServiceTest {
     public void shouldWarmUp() throws IOException {
         Response response = service.warmUp(db);
         HashMap actual = objectMapper.readValue((String) response.getEntity(), HashMap.class);
-        assertEquals(WARM_UP_MAP, actual);
+        assertTrue(actual.get("response").toString().startsWith(WARM_UP_MAP.get("response")));
     }
 
 
@@ -51,7 +52,7 @@ public class ServiceTest {
     }};
 
     public static HashMap<String, String> WARM_UP_MAP = new HashMap<String, String>(){{
-        put("response","Warmed up and ready to go!");
+        put("response","Warmed up and ready to go");
     }};
 
 }
