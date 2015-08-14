@@ -37,29 +37,35 @@ public class Service {
 
     @GET
     @Path("/warmup")
-    public Response warmUp(@Context GraphDatabaseService db) throws IOException {
+    public Response warmUp(final @Context GraphDatabaseService db) throws IOException {
 
         ExecutorService service = Executors.newCachedThreadPool();
 
-        Callable<Void> readNodes = () -> {
-            try (Transaction tx = db.beginTx()) {
-                for (Node node : GlobalGraphOperations.at(db).getAllNodes()) {
-                    node.getPropertyKeys();
-                    nodeCount++;
+        Callable<Void> readNodes = new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                try (Transaction tx = db.beginTx()) {
+                    for (Node node : GlobalGraphOperations.at(db).getAllNodes()) {
+                        node.getPropertyKeys();
+                        nodeCount++;
+                    }
                 }
+                return null;
             }
-            return null;
         };
 
-        Callable<Void> readRels = () -> {
-            try (Transaction tx = db.beginTx()) {
-                for ( Relationship relationship : GlobalGraphOperations.at(db).getAllRelationships()){
-                    relationship.getPropertyKeys();
-                    relationship.getNodes();
-                    relCount++;
+        Callable<Void> readRels = new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                try (Transaction tx = db.beginTx()) {
+                    for (Relationship relationship : GlobalGraphOperations.at(db).getAllRelationships()) {
+                        relationship.getPropertyKeys();
+                        relationship.getNodes();
+                        relCount++;
+                    }
                 }
+                return null;
             }
-            return null;
         };
 
         final Map<String, String> results = new HashMap<>();
